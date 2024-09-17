@@ -4,3 +4,6 @@
 *.csv
 *.jar
 *.tgz
+*.log
+*.out
+*.pid
