@@ -61,3 +61,31 @@
 [2024-09-17T06:32:22.339-0300] {logging_mixin.py:188} INFO - [2024-09-17T06:32:22.338-0300] {dag.py:3089} INFO - Sync 1 DAGs
 [2024-09-17T06:32:22.367-0300] {logging_mixin.py:188} INFO - [2024-09-17T06:32:22.366-0300] {dag.py:3947} INFO - Setting next_dagrun for example_python_decorator to None, run_after=None
 [2024-09-17T06:32:22.409-0300] {processor.py:183} INFO - Processing /home/jezandre/airflow/airflow_env/lib/python3.11/site-packages/airflow/example_dags/example_python_decorator.py took 0.207 seconds
+[2024-09-17T06:32:53.232-0300] {processor.py:161} INFO - Started process (PID=22846) to work on /home/jezandre/airflow/airflow_env/lib/python3.11/site-packages/airflow/example_dags/example_python_decorator.py
+[2024-09-17T06:32:53.233-0300] {processor.py:830} INFO - Processing file /home/jezandre/airflow/airflow_env/lib/python3.11/site-packages/airflow/example_dags/example_python_decorator.py for tasks to queue
+[2024-09-17T06:32:53.236-0300] {logging_mixin.py:188} INFO - [2024-09-17T06:32:53.235-0300] {dagbag.py:545} INFO - Filling up the DagBag from /home/jezandre/airflow/airflow_env/lib/python3.11/site-packages/airflow/example_dags/example_python_decorator.py
+[2024-09-17T06:32:53.251-0300] {processor.py:840} INFO - DAG(s) 'example_python_decorator' retrieved from /home/jezandre/airflow/airflow_env/lib/python3.11/site-packages/airflow/example_dags/example_python_decorator.py
+[2024-09-17T06:32:53.283-0300] {logging_mixin.py:188} INFO - [2024-09-17T06:32:53.283-0300] {dag.py:3089} INFO - Sync 1 DAGs
+[2024-09-17T06:32:53.298-0300] {logging_mixin.py:188} INFO - [2024-09-17T06:32:53.297-0300] {dag.py:3947} INFO - Setting next_dagrun for example_python_decorator to None, run_after=None
+[2024-09-17T06:32:53.326-0300] {processor.py:183} INFO - Processing /home/jezandre/airflow/airflow_env/lib/python3.11/site-packages/airflow/example_dags/example_python_decorator.py took 0.101 seconds
+[2024-09-17T06:33:23.972-0300] {processor.py:161} INFO - Started process (PID=23078) to work on /home/jezandre/airflow/airflow_env/lib/python3.11/site-packages/airflow/example_dags/example_python_decorator.py
+[2024-09-17T06:33:23.974-0300] {processor.py:830} INFO - Processing file /home/jezandre/airflow/airflow_env/lib/python3.11/site-packages/airflow/example_dags/example_python_decorator.py for tasks to queue
+[2024-09-17T06:33:23.976-0300] {logging_mixin.py:188} INFO - [2024-09-17T06:33:23.975-0300] {dagbag.py:545} INFO - Filling up the DagBag from /home/jezandre/airflow/airflow_env/lib/python3.11/site-packages/airflow/example_dags/example_python_decorator.py
+[2024-09-17T06:33:23.989-0300] {processor.py:840} INFO - DAG(s) 'example_python_decorator' retrieved from /home/jezandre/airflow/airflow_env/lib/python3.11/site-packages/airflow/example_dags/example_python_decorator.py
+[2024-09-17T06:33:24.023-0300] {logging_mixin.py:188} INFO - [2024-09-17T06:33:24.023-0300] {dag.py:3089} INFO - Sync 1 DAGs
+[2024-09-17T06:33:24.039-0300] {logging_mixin.py:188} INFO - [2024-09-17T06:33:24.039-0300] {dag.py:3947} INFO - Setting next_dagrun for example_python_decorator to None, run_after=None
+[2024-09-17T06:33:24.068-0300] {processor.py:183} INFO - Processing /home/jezandre/airflow/airflow_env/lib/python3.11/site-packages/airflow/example_dags/example_python_decorator.py took 0.104 seconds
+[2024-09-17T06:33:54.502-0300] {processor.py:161} INFO - Started process (PID=23359) to work on /home/jezandre/airflow/airflow_env/lib/python3.11/site-packages/airflow/example_dags/example_python_decorator.py
+[2024-09-17T06:33:54.503-0300] {processor.py:830} INFO - Processing file /home/jezandre/airflow/airflow_env/lib/python3.11/site-packages/airflow/example_dags/example_python_decorator.py for tasks to queue
+[2024-09-17T06:33:54.504-0300] {logging_mixin.py:188} INFO - [2024-09-17T06:33:54.504-0300] {dagbag.py:545} INFO - Filling up the DagBag from /home/jezandre/airflow/airflow_env/lib/python3.11/site-packages/airflow/example_dags/example_python_decorator.py
+[2024-09-17T06:33:54.517-0300] {processor.py:840} INFO - DAG(s) 'example_python_decorator' retrieved from /home/jezandre/airflow/airflow_env/lib/python3.11/site-packages/airflow/example_dags/example_python_decorator.py
+[2024-09-17T06:33:54.547-0300] {logging_mixin.py:188} INFO - [2024-09-17T06:33:54.546-0300] {dag.py:3089} INFO - Sync 1 DAGs
+[2024-09-17T06:33:54.560-0300] {logging_mixin.py:188} INFO - [2024-09-17T06:33:54.560-0300] {dag.py:3947} INFO - Setting next_dagrun for example_python_decorator to None, run_after=None
+[2024-09-17T06:33:54.589-0300] {processor.py:183} INFO - Processing /home/jezandre/airflow/airflow_env/lib/python3.11/site-packages/airflow/example_dags/example_python_decorator.py took 0.095 seconds
+[2024-09-17T06:34:24.915-0300] {processor.py:161} INFO - Started process (PID=23608) to work on /home/jezandre/airflow/airflow_env/lib/python3.11/site-packages/airflow/example_dags/example_python_decorator.py
+[2024-09-17T06:34:24.917-0300] {processor.py:830} INFO - Processing file /home/jezandre/airflow/airflow_env/lib/python3.11/site-packages/airflow/example_dags/example_python_decorator.py for tasks to queue
+[2024-09-17T06:34:24.920-0300] {logging_mixin.py:188} INFO - [2024-09-17T06:34:24.919-0300] {dagbag.py:545} INFO - Filling up the DagBag from /home/jezandre/airflow/airflow_env/lib/python3.11/site-packages/airflow/example_dags/example_python_decorator.py
+[2024-09-17T06:34:24.934-0300] {processor.py:840} INFO - DAG(s) 'example_python_decorator' retrieved from /home/jezandre/airflow/airflow_env/lib/python3.11/site-packages/airflow/example_dags/example_python_decorator.py
+[2024-09-17T06:34:24.965-0300] {logging_mixin.py:188} INFO - [2024-09-17T06:34:24.965-0300] {dag.py:3089} INFO - Sync 1 DAGs
+[2024-09-17T06:34:24.980-0300] {logging_mixin.py:188} INFO - [2024-09-17T06:34:24.980-0300] {dag.py:3947} INFO - Setting next_dagrun for example_python_decorator to None, run_after=None
+[2024-09-17T06:34:25.009-0300] {processor.py:183} INFO - Processing /home/jezandre/airflow/airflow_env/lib/python3.11/site-packages/airflow/example_dags/example_python_decorator.py took 0.104 seconds
