@@ -1,0 +1,7 @@
+[[34m2024-09-17T06:31:59.359-0300[0m] {[34mtask_context_logger.py:[0m63} INFO[0m - Task context logging is enabled[0m
+[[34m2024-09-17T06:31:59.364-0300[0m] {[34mexecutor_loader.py:[0m235} INFO[0m - Loaded executor: LocalExecutor[0m
+[[34m2024-09-17T06:32:04.445-0300[0m] {[34mscheduler_job_runner.py:[0m799} INFO[0m - Starting the scheduler[0m
+[[34m2024-09-17T06:32:04.446-0300[0m] {[34mscheduler_job_runner.py:[0m806} INFO[0m - Processing each file at most -1 times[0m
+[[34m2024-09-17T06:32:04.736-0300[0m] {[34mmanager.py:[0m170} INFO[0m - Launched DagFileProcessorManager with pid: 22348[0m
+[[34m2024-09-17T06:32:04.739-0300[0m] {[34mscheduler_job_runner.py:[0m1598} INFO[0m - Adopting or resetting orphaned tasks for active dag runs[0m
+[[34m2024-09-17T06:32:04.748-0300[0m] {[34msettings.py:[0m60} INFO[0m - Configured default timezone UTC[0m

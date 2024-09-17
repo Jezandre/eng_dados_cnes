@@ -1,0 +1,22 @@
+2024-09-17 06:27:07,499 INFO - Task context logging is enabled
+2024-09-17 06:27:07,501 INFO - Loaded executor: SequentialExecutor
+2024-09-17 06:27:07,536 INFO - Starting the scheduler
+2024-09-17 06:27:07,537 INFO - Processing each file at most -1 times
+2024-09-17 06:27:07,542 INFO - Launched DagFileProcessorManager with pid: 19939
+2024-09-17 06:27:07,544 INFO - Adopting or resetting orphaned tasks for active dag runs
+2024-09-17 06:27:07,549 INFO - Configured default timezone UTC
+2024-09-17 06:29:43,465 INFO - Task context logging is enabled
+2024-09-17 06:29:43,470 INFO - Loaded executor: SequentialExecutor
+2024-09-17 06:29:48,538 INFO - Starting the scheduler
+2024-09-17 06:29:48,539 INFO - Processing each file at most -1 times
+2024-09-17 06:29:48,544 INFO - Launched DagFileProcessorManager with pid: 20987
+2024-09-17 06:29:48,545 INFO - Adopting or resetting orphaned tasks for active dag runs
+2024-09-17 06:29:48,550 INFO - Configured default timezone UTC
+2024-09-17 06:29:48,570 INFO - Marked 1 SchedulerJob instances as failed
+2024-09-17 06:31:59,359 INFO - Task context logging is enabled
+2024-09-17 06:31:59,364 INFO - Loaded executor: LocalExecutor
+2024-09-17 06:32:04,445 INFO - Starting the scheduler
+2024-09-17 06:32:04,446 INFO - Processing each file at most -1 times
+2024-09-17 06:32:04,736 INFO - Launched DagFileProcessorManager with pid: 22348
+2024-09-17 06:32:04,739 INFO - Adopting or resetting orphaned tasks for active dag runs
+2024-09-17 06:32:04,748 INFO - Configured default timezone UTC

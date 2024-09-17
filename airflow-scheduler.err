@@ -1,0 +1,12 @@
+[2024-09-17 06:31:59 -0300] [22153] [INFO] Starting gunicorn 23.0.0
+[2024-09-17 06:31:59 -0300] [22153] [ERROR] Connection in use: ('::', 8793)
+[2024-09-17 06:31:59 -0300] [22153] [ERROR] connection to ('::', 8793) failed: [Errno 98] Address already in use
+[2024-09-17 06:32:00 -0300] [22153] [ERROR] Connection in use: ('::', 8793)
+[2024-09-17 06:32:00 -0300] [22153] [ERROR] connection to ('::', 8793) failed: [Errno 98] Address already in use
+[2024-09-17 06:32:01 -0300] [22153] [ERROR] Connection in use: ('::', 8793)
+[2024-09-17 06:32:01 -0300] [22153] [ERROR] connection to ('::', 8793) failed: [Errno 98] Address already in use
+[2024-09-17 06:32:02 -0300] [22153] [ERROR] Connection in use: ('::', 8793)
+[2024-09-17 06:32:02 -0300] [22153] [ERROR] connection to ('::', 8793) failed: [Errno 98] Address already in use
+[2024-09-17 06:32:03 -0300] [22153] [ERROR] Connection in use: ('::', 8793)
+[2024-09-17 06:32:03 -0300] [22153] [ERROR] connection to ('::', 8793) failed: [Errno 98] Address already in use
+[2024-09-17 06:32:04 -0300] [22153] [ERROR] Can't connect to ('::', 8793)
