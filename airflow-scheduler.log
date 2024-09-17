@@ -20,3 +20,8 @@
 2024-09-17 06:32:04,736 INFO - Launched DagFileProcessorManager with pid: 22348
 2024-09-17 06:32:04,739 INFO - Adopting or resetting orphaned tasks for active dag runs
 2024-09-17 06:32:04,748 INFO - Configured default timezone UTC
+2024-09-17 06:37:04,829 INFO - Adopting or resetting orphaned tasks for active dag runs
+2024-09-17 06:37:04,833 INFO - Marked 1 SchedulerJob instances as failed
+2024-09-17 06:42:04,882 INFO - Adopting or resetting orphaned tasks for active dag runs
+2024-09-17 06:47:04,931 INFO - Adopting or resetting orphaned tasks for active dag runs
+2024-09-17 06:52:04,983 INFO - Adopting or resetting orphaned tasks for active dag runs
