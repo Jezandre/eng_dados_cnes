@@ -25,3 +25,13 @@
 2024-09-17 06:42:04,882 INFO - Adopting or resetting orphaned tasks for active dag runs
 2024-09-17 06:47:04,931 INFO - Adopting or resetting orphaned tasks for active dag runs
 2024-09-17 06:52:04,983 INFO - Adopting or resetting orphaned tasks for active dag runs
+2024-09-17 06:57:05,034 INFO - Adopting or resetting orphaned tasks for active dag runs
+2024-09-17 07:02:05,102 INFO - Adopting or resetting orphaned tasks for active dag runs
+2024-09-17 07:07:05,164 INFO - Adopting or resetting orphaned tasks for active dag runs
+2024-09-17 07:10:12,572 INFO - Task context logging is enabled
+2024-09-17 07:10:12,576 INFO - Loaded executor: LocalExecutor
+2024-09-17 07:10:17,680 INFO - Starting the scheduler
+2024-09-17 07:10:17,681 INFO - Processing each file at most -1 times
+2024-09-17 07:10:17,871 INFO - Launched DagFileProcessorManager with pid: 43430
+2024-09-17 07:10:17,874 INFO - Adopting or resetting orphaned tasks for active dag runs
+2024-09-17 07:10:17,881 INFO - Configured default timezone UTC

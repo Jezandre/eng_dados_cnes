@@ -1,5 +1,7 @@
+
 /logs
 /airfow_env
+
 *.cfg
 *.csv
 *.jar

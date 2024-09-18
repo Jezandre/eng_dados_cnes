@@ -21,7 +21,7 @@ Traceback (most recent call last):
   File "/home/jezandre/airflow/airflow_env/lib/python3.11/site-packages/psutil/_common.py", line 799, in open_binary
     return open(fname, "rb", buffering=FILE_READ_BUFFER_SIZE)
            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-FileNotFoundError: [Errno 2] No such file or directory: '/proc/21214/stat'
+FileNotFoundError: [Errno 2] No such file or directory: '/proc/22384/stat'
 
 During handling of the above exception, another exception occurred:
 
@@ -39,7 +39,7 @@ Traceback (most recent call last):
                   ^^^^^^^^^^^^^^^^^^^^^^^
   File "/home/jezandre/airflow/airflow_env/lib/python3.11/site-packages/psutil/_pslinux.py", line 1726, in wrapper
     raise NoSuchProcess(self.pid, self._name)
-psutil.NoSuchProcess: process no longer exists (pid=21214)
+psutil.NoSuchProcess: process no longer exists (pid=22384)
 
 During handling of the above exception, another exception occurred:
 
@@ -72,4 +72,4 @@ Traceback (most recent call last):
     self._init(pid)
   File "/home/jezandre/airflow/airflow_env/lib/python3.11/site-packages/psutil/__init__.py", line 368, in _init
     raise NoSuchProcess(pid, msg=msg)
-psutil.NoSuchProcess: process PID not found (pid=21214)
+psutil.NoSuchProcess: process PID not found (pid=22384)
