@@ -1,6 +1,7 @@
 
 /logs
 /airfow_env
+airflow-scheduler.err
 
 *.cfg
 *.csv

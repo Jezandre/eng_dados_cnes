@@ -221,8 +221,17 @@ exit
 ```
 # Instalar Airflow
 
-- Atualizar o flask:
+A instalação do airflow talvez seja a aplicação que eu tive maior dificuldade. Primeiro porque tentei utilizar o método tradicional utilizando o docker, porém no meu caso não funcionou muito bem. É por isso que optei por instalar dessa maneira que vou tentar descrever aqui.
 
+- Instalar o `airflow`, utilizei o pip e defini a versão como sendo a `2.9.3`.
+
+```bash
+pip install apache-airflow==2.9.3
+```
+
+Após a instalações tive que instalar as dependencias e atualizar alguns requerimetntos como por exemplo o Flask e o alembic.
+
+- Atualizar o flask:
 
 ```bash
 pip install apache-airflow==2.7.2 flask-appbuilder==4.3.6
@@ -232,45 +241,206 @@ pip install apache-airflow==2.7.2 flask-appbuilder==4.3.6
 ```bash
 pip install alembic==1.13.1
 ```
-- Instalar o airflow
+
+- Dependencias:
+
 
 ```bash
-pip install apache-airflow==2.9.3
+pip install \
+  apache-airflow-providers-common-io \
+  apache-airflow-providers-common-sql \
+  apache-airflow-providers-dbt-cloud \
+  apache-airflow-providers-fab \
+  apache-airflow-providers-ftp \
+  apache-airflow-providers-http \
+  apache-airflow-providers-imap \
+  apache-airflow-providers-postgres \
+  apache-airflow-providers-smtp \
+  apache-airflow-providers-sqlite
 ```
-- Criar usuario
 
+Para criar um usuário basta seguir os seguintes passos
+
+- Criar usuario
+```bash
 airflow users create \
-    --username jezandre \
-    --firstname jezandre \
-    --lastname jezandre \
+    --username airflow \
+    --firstname airflow \
+    --lastname airflow \
     --role Admin \
-    --email jezandre_tiago@hotmail.com
+    --email airflow@hotmail.com
+```
+
+- Verificar as instalação
+
+```bash
+airflow version
+```
+
+No ambiente virtual criado temos um arquivo chamado `airflow.cfg`, nele temos todas as configurações padrões definidas. Uma que é importante alterar seria essa:
+
+```yaml
+[core]
+test_connection = Enabled
+```
+Essa configuração permitirá seu usuário admin a verificar as conexões que criaremos futuramente. Obviamente que mais pra frente possa ser necessário alterar outras configurações. Para isso voce pode consultar a documentação disponível em:
+
+[Documentação Oficial do Apache Airflow](https://airflow.apache.org/docs/)
+
+Para visualizar se tudo deu certo execute os comandos a seguir o primeiro é para inicializar o banco de dados:
+
+```bash
+airflow innit db
+```
+
+O comando a seguir é para executar o scheduler, lembrando que o -D é para executar em segundo plano:
+
+```bash
+airflow scheduler -D
+```
+O ultimo é para executar o UI do airflow. Como configuração padrão você pode abrir a UI no seguinte endereço:
+
+```bash
+airflow webserver -D
+```
+
+http://localhost:8080/home
+
 
 
 # Instalar dbt 1.0.0.38.13
 
-- pip install dbt-postgres==1.0.0.38.13
-- dbt postgres
+O DBT é uma ferramenta bem simples de se instalar e configurar. No seu ambiente virtual basta executar o seguinte comando:
+```bash
+pip install dbt-postgres==1.0.0.38.13
+```
+
+Em seguida instalaremos os drivers de conexão com o postgres e o snowflake. O meu intuito é utilizar o Snowflake, porém como a plataforma é paga pode ser que quando eu estiver terminando esse projeto talvez não tenha ele disponivel então vamos instalar os dois por via das duvidas.
+
+- DBT Drivers
+
+```bash
+pip install dbt-postgres 
+pip install dbt-snowflake
+```
+
+O próximo passo é realizar a configuração de conexão entre DBT postgres e snowflake. Para isso você poderá utilizar dois caminhos o primero é através da comand line utilizando o comando:
+
+```bash
+dbt innit
+```
+O sitema vai te pedir o passo a passo para executar as configurações seja do snowflake, psql ou qualquer outro banco de dados que você escolheu utilizar.
+
+A outra maneira é utilizando o arquivo `profile.yaml`
+
+Lá você pode acessar através do seguinte endereço:
+
+```bash
+nano ~/.dbt/profiles.yml
+```
+E digitar as seguintes configurações:
+
+- Configuracoes PSQL
+```yaml
+my_postgres_project:
+  outputs:
+    dev:
+      type: postgres
+      host: localhost
+      user: airflow
+      password: airflow
+      dbname: airflow_db
+      schema: airflow
+      port: 5432
+      threads: 4
+  target: dev
+```
+
+- Configuracoes Snowflake
+```yaml
+my_snowflake_project:
+  outputs:
+    dev:
+      type: snowflake
+      account: your_account_name
+      user: my_username
+      password: my_password
+      role: my_role
+      database: my_database
+      warehouse: my_warehouse
+      schema: my_schema
+      threads: 4
+      client_session_keep_alive: False
+      authenticator: externalbrowser
+  target: dev
+```
+
+Mais pra frente eu mostro como realizar a conexão e criar uma conta no Snowflake. No momento apenas isso já basta para prosseguirmos.
+
+No meu caso eu criei dois projetos um para psql e um para snowflake, é importante que no arquivo `dbt_project.yml` esteja selecionado em profile o nome correto da sua conexão.
+
+Para realizar os testes na comand line ACESSE A PASTA DO SEU PROJETO E DIGITE:
+
+```bash
+dbt debug
+```
+Duas coisas super importantes, o ambiente virtual precisa estar ativo e você precisa estar posicionado na pasta correta para executar os comandos do DBT se não vc não vai conseguir executar.
+
+Se sua conexão estiver correta você receberá a resposta de `All checks passed!`
 
 # Instalar PySpark
 
-Atualizar instalador e java
+O PySpark será uma ferramenta bem interessante para trabalharmos aqui. A instalação dele pode ser também um pouco desafiadora mas nada que não seja impossível.
+
+A primeira etapa é atualizar o instalador do linux e o Java.
 
 ```bash
 sudo apt update
 sudo apt install openjdk-11-jdk
 ```
-baixar nova versão do pyspark
+Em seguida acesse o site do Apache Spark e identifique as versões disponíveis e procure baixar a versão compatível com a configuração que estamos utilizando.
+
+- Baixar arquivo
+```bash
+wget https://dlcdn.apache.org/spark/spark-3.4.3/spark-3.4.3-bin-hadoop3.tgz
+```
+- Descompactar
+```bash
+tar xvf spark-3.4.3-bin-hadoop3.tgz
+```
+- Mover o arquivo
 
 ```bash
-wget https://dlcdn.apache.org/spark/spark-3.5.2/spark-3.5.2-bin-hadoop3.tgz
+sudo mv spark-3.4.3-bin-hadoop3 /opt/spark
 ```
-descompactar
-```bash
-tar xvf spark-3.5.2-bin-hadoop3.tgz
-```
-mover o arquivo
+
+- Instalar 
+
+defina as variáveis de ambiente:
 
 ```bash
-sudo mv spark-3.5.2-bin-hadoop3 /opt/spark
+export SPARK_HOME=/path/to/spark
+export PATH=$SPARK_HOME/bin:$PATH
 ```
+
+Em seguida realize um teste utilizando o seguinte comando:
+
+```bash
+pyspark
+```
+E dentro da interface use os comandos:
+```py
+# Criar um DataFrame simples
+data = [("João", 30), ("Maria", 25), ("José", 40)]
+df = spark.createDataFrame(data, ["Nome", "Idade"])
+
+# Mostrar o DataFrame
+df.show()
+```
+
+Pronto aparentemente todas as nossas ferramentas estão instaladas e prontas para utilizá-las mas acho super válido executarmos um teste entre as integrações de cada uma criando uma dag de exemplo para cada e executando no airflow.
+
+# Testando as integrações
+
+Nesse caso não vou me atentar a criar um teste gastando tempo vou apenas utilizar um prompt no Chat GPT para criar exemplos bem simples:
+
