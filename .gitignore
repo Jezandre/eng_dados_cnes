@@ -10,3 +10,5 @@ airflow-scheduler.err
 *.log
 *.out
 *.pid
+*.err
+
