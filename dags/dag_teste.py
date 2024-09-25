@@ -11,16 +11,18 @@ default_args = {
 with DAG(
         'dbt_airflow_example', 
         default_args=default_args, 
-        schedule_interval='@daily'
+        schedule_interval='@daily',
+        catchup=False
         ) as dag:
     # Tarefa para executar o comando dbt run
 
     dbt_run = BashOperator(
         task_id='dbt_run',
-        bash_command='source airflow_env/bin/activate && dbt run --project-dir /home/jezandre/airflow/my_project_psql',
+        bash_command='. /home/jezandre/airflow/airflow_env/bin/activate && dbt run --project-dir /home/jezandre/airflow/my_project_psql',
         execution_timeout=timedelta(minutes=2),  # Define o tempo máximo de execução
         dag=dag,
     )
+    
 
     # Definindo a ordem de execução
     dbt_run

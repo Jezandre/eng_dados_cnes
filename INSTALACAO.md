@@ -26,7 +26,7 @@ As versões que utilizarei serão as seguintes
 
 - python 3.11.10
 - python venv python3.11
-- Airflow 2.9.3
+- Airflow 2.10.2
 - DBT 1.0.0.38.13
 - Pyspark 3.5.2
 
@@ -221,29 +221,32 @@ exit
 ```
 # Instalar Airflow
 
-A instalação do airflow talvez seja a aplicação que eu tive maior dificuldade. Primeiro porque tentei utilizar o método tradicional utilizando o docker, porém no meu caso não funcionou muito bem. É por isso que optei por instalar dessa maneira que vou tentar descrever aqui.
+A instalação do airflow pra mim sempre foi um inferno, sempre deu problema, essa deve ser a segunda versão que escrevo de como instalar ele. Eu tive que atualizar para a versão 2.10.2 pois, quando fui realizar alguns testes, as tarefas simplesmente não executaram. Porém seguindo os passos do site funcionou fácil fácil.
 
-- Instalar o `airflow`, utilizei o pip e defini a versão como sendo a `2.9.3`.
+No linha de comando execute o o seguinte código para configurar a variável de ambiente:
 
 ```bash
-pip install apache-airflow==2.9.3
+export AIRFLOW_HOME=~/airflow
 ```
 
-Após a instalações tive que instalar as dependencias e atualizar alguns requerimetntos como por exemplo o Flask e o alembic.
-
-- Atualizar o flask:
+Em seguida execute os comandos:
 
 ```bash
-pip install apache-airflow==2.7.2 flask-appbuilder==4.3.6
+AIRFLOW_VERSION=2.10.2
+
+PYTHON_VERSION="$(python -c 'import sys; print(f"{sys.version_info.major}.{sys.version_info.minor}")')"
+
+CONSTRAINT_URL="https://raw.githubusercontent.com/apache/airflow/constraints-${AIRFLOW_VERSION}/constraints-${PYTHON_VERSION}.txt"
+
+pip install "apache-airflow==${AIRFLOW_VERSION}" --constraint "${CONSTRAINT_URL}"
 ```
-- Instalar o alembic
 
+Em seguida você pode realizar um teste executando ele em modo standalone
 ```bash
-pip install alembic==1.13.1
+airflow standalone
 ```
 
 - Dependencias:
-
 
 ```bash
 pip install \
