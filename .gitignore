@@ -11,4 +11,4 @@ airflow-scheduler.err
 *.out
 *.pid
 *.err
-
+standalone_admin_password.txt

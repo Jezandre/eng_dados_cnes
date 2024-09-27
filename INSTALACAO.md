@@ -249,17 +249,21 @@ airflow standalone
 - Dependencias:
 
 ```bash
-pip install \
-  apache-airflow-providers-common-io \
-  apache-airflow-providers-common-sql \
-  apache-airflow-providers-dbt-cloud \
-  apache-airflow-providers-fab \
-  apache-airflow-providers-ftp \
-  apache-airflow-providers-http \
-  apache-airflow-providers-imap \
-  apache-airflow-providers-postgres \
-  apache-airflow-providers-smtp \
-  apache-airflow-providers-sqlite
+pip install apache-airflow==2.10.2 \
+apache-airflow-providers-apache-spark==4.10.0 \
+apache-airflow-providers-celery==3.8.1 \
+apache-airflow-providers-common-compat==1.2.0 \
+apache-airflow-providers-common-io==1.4.0 \
+apache-airflow-providers-common-sql==1.16.0 \
+apache-airflow-providers-dbt-cloud==3.10.0 \
+apache-airflow-providers-fab==1.3.0 \
+apache-airflow-providers-ftp==3.11.0 \
+apache-airflow-providers-http==4.13.0 \
+apache-airflow-providers-imap==3.7.0 \
+apache-airflow-providers-postgres==5.12.0 \
+apache-airflow-providers-smtp==1.8.0 \
+apache-airflow-providers-snowflake==5.7.0 \
+apache-airflow-providers-sqlite==3.9.0
 ```
 
 Para criar um usuário basta seguir os seguintes passos
@@ -447,3 +451,91 @@ Pronto aparentemente todas as nossas ferramentas estão instaladas e prontas par
 
 Nesse caso não vou me atentar a criar um teste gastando tempo vou apenas utilizar um prompt no Chat GPT para criar exemplos bem simples:
 
+Durante os testes tive alguns problema para rodar algumas tarefas do `DBT` e demorei um bom tempo até descobrir qual era o problema em si. Parece que existia algum outro processo rodando na mesma porta do scheduler e isso impedia meu usuário de rodar as tarefas. Inclusive se vocês estiverem enfrentando algum problema do tipo, exemplo a tarefa incia mas não sai do amarelo sugiro verificar o scheduler.
+
+O teste de DAG para o dbt foi bem simples criei o seguinte script apenas para executar o dbt run
+
+```py
+from airflow import DAG
+from airflow.operators.bash import BashOperator
+from datetime import datetime, timedelta
+
+default_args = {
+    'owner': 'airflow',
+    'start_date': datetime(2024, 9, 19),
+    'retries': 1,
+}
+
+with DAG(
+        'dbt_airflow_example', 
+        default_args=default_args, 
+        schedule_interval='@daily',
+        catchup=False
+        ) as dag:
+    # Tarefa para executar o comando dbt run
+
+    dbt_run = BashOperator(
+        task_id='dbt_run',
+        bash_command='source /path/to/dbt/enviroment/bin/activate && dbt run --project-dir /path/to/your/project',
+        execution_timeout=timedelta(minutes=2),  # Define o tempo máximo de execução
+        dag=dag,
+    )
+
+    # Definindo a ordem de execução
+    dbt_run
+```
+O segundo teste é referente a utilização do `PySpark`, para isso utilizei dois scripts um para criar a Dag e o outro para executar as tarefas em PySpark.
+
+```py
+from airflow import DAG
+from airflow.operators.bash import BashOperator
+from airflow.utils.dates import days_ago
+
+# Definindo o DAG
+default_args = {
+    'owner': 'airflow',
+    'depends_on_past': False,
+    'email_on_failure': False,
+    'email_on_retry': False,
+    'retries': 1,
+}
+
+with DAG(
+    dag_id='pyspark_example_dag',
+    default_args=default_args,
+    description='DAG de exemplo para executar um job PySpark',
+    schedule_interval=None,  # Executa apenas manualmente
+    start_date=days_ago(1),
+    catchup=False,
+) as dag:
+
+    # Tarefa para executar um script PySpark
+    run_pyspark_job = BashOperator(
+        task_id='run_pyspark_job',
+        bash_command="""spark-submit --master local[2] /home/jezandre/airflow/dags/dag_teste_PySpark.py"""
+    )
+
+    run_pyspark_job
+```
+
+```py
+from pyspark.sql import SparkSession
+
+spark = SparkSession.builder.appName("test").getOrCreate()
+df = spark.createDataFrame([(1, 'foo'), (2, 'bar')], ["id", "value"])
+df.show()
+```
+
+Os bancos de dados você pode criar os conectores dentro do Airflow e realizar os testes de conexão lá dentro. Para isso vc precisa ativar o recurso no airflow.cfg e ativar o seguinte.
+
+```yaml
+[core]
+test_connection = Enabled
+```
+
+No airflow você insere o endereço credenciais e define qual o banco de dados você utilizará.
+
+# Conclusão 
+
+
+Ambiente configurado e testado próximo passo inciar o processo para a criação das nossas camadas bronze, silver e Gold.
