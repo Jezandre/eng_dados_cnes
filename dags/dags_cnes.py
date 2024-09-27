@@ -55,12 +55,12 @@ pegar_url_task = PythonOperator(
 )
 
 
-baixar_arquivos_task = PythonOperator(
-    task_id='baixar_arquivos',
-    python_callable=baixarArquivosCSV,    
-    provide_context=True,
-    dag=dag
-)
+# baixar_arquivos_task = PythonOperator(
+#     task_id='baixar_arquivos',
+#     python_callable=baixarArquivosCSV,    
+#     provide_context=True,
+#     dag=dag
+# )
 
 renomear_arquivos_task = PythonOperator(
     task_id='renomear_arquivos',
@@ -71,28 +71,28 @@ renomear_arquivos_task = PythonOperator(
 
 
 
-selecionar_arquivos_task = PythonOperator(
-    task_id='obter_arquivos_csv',
-    python_callable=selecionarArquivosCSVutilizados,
-    provide_context=True,
-    dag=dag,
-)
+# selecionar_arquivos_task = PythonOperator(
+#     task_id='obter_arquivos_csv',
+#     python_callable=selecionarArquivosCSVutilizados,
+#     provide_context=True,
+#     dag=dag,
+# )
 
 
-criar_tabelas_task = PythonOperator(
-    task_id='criar_tabelas_from_csv',
-    python_callable=criarTabelasAPartirDoCSV,
-    dag=dag
-)
+# criar_tabelas_task = PythonOperator(
+#     task_id='criar_tabelas_from_csv',
+#     python_callable=criarTabelasAPartirDoCSV,
+#     dag=dag
+# )
 
 
-inserir_dados_task = PythonOperator(
-    task_id='inserir_dados',
-    python_callable=inserirDadosNasTabelas,
-    provide_context=True,
-    dag=dag
-)
+# inserir_dados_task = PythonOperator(
+#     task_id='inserir_dados',
+#     python_callable=inserirDadosNasTabelas,
+#     provide_context=True,
+#     dag=dag
+# )
 
-pegar_url_task >> baixar_arquivos_task >> renomear_arquivos_task >> selecionar_arquivos_task
-
-selecionar_arquivos_task >> criar_tabelas_task >> inserir_dados_task
+#pegar_url_task >> baixar_arquivos_task >> renomear_arquivos_task #>> selecionar_arquivos_task
+pegar_url_task >> renomear_arquivos_task
+#selecionar_arquivos_task >> criar_tabelas_task >> inserir_dados_task

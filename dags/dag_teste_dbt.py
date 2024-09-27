@@ -18,7 +18,7 @@ with DAG(
 
     dbt_run = BashOperator(
         task_id='dbt_run',
-        bash_command='source /pa/jezandre/airflow/airflow_env/bin/activate && dbt run --project-dir /home/jezandre/airflow/my_project_psql',
+        bash_command='source /home/jezandre/airflow/airflow_env/bin/activate && dbt run --project-dir /home/jezandre/airflow/my_project_psql',
         execution_timeout=timedelta(minutes=2),  # Define o tempo máximo de execução
         dag=dag,
     )

@@ -21,50 +21,57 @@ from sqlalchemy import create_engine, text
 import shutil
 from urllib.error import URLError
 import configparser
+import os
+import shutil
+import urllib.request
+import zipfile
 
 
 
+# Função que verifica se a URL existe
+def verifica_url_existe(url, timeout=10):
+    try:
+        urllib.request.urlopen(url, timeout=timeout)
+        return True
+    except urllib.error.URLError as e:
+        print(f"Erro ao acessar {url}: {e.reason}")
+        return False
+    except Exception as e:
+        print(f"Erro inesperado: {e}")
+        return False
 
-
+# Função para testar e encontrar a URL válida
 def testarURL():
     data_atual = datetime.now()
-    # definir datas para inserir no link
-    mes_atual = (data_atual.month)
-    ano_atual = (data_atual.year)
+    # Definir a pasta de destino
+    pasta_destino = r'/home/jezandre/airflow/cnes_zip'
 
-    url = 'ftp://ftp.datasus.gov.br/cnes/BASE_DE_DADOS_CNES_' + str(ano_atual) + str(mes_atual) + '.ZIP'
+    max_tentativas = 12  # Limita o loop a 12 tentativas (um ano para trás)
+    tentativas = 0
 
-    # Avaliando se o link referente ao mês existe
-    try:
-        resposta = urllib.request.urlopen(url)
+    # Iniciando loop para encontrar o arquivo
+    while tentativas < max_tentativas:
+        ano_atual = data_atual.strftime('%Y')
+        mes_atual = data_atual.strftime('%m')
+                        
+        url = 'ftp://ftp.datasus.gov.br/cnes/BASE_DE_DADOS_CNES_' + ano_atual + mes_atual + '.ZIP'
+        print(f"Tentando acessar: {url}")
+        
+        if verifica_url_existe(url):
+            print(f"Arquivo encontrado: {url}")
+            caminho_zip = f'{pasta_destino}/BASE_DE_DADOS_CNES_{ano_atual}{mes_atual}.ZIP'
+            local_filename = f'{pasta_destino}/BASE_DE_DADOS_CNES_{ano_atual}{mes_atual}.ZIP'
+            return url, caminho_zip, local_filename
+        else:
+            # Se o arquivo não for encontrado, subtrai um mês
+            data_atual = data_atual - pd.DateOffset(months=1)
+            tentativas += 1  # Incrementa o contador de tentativas
+            print(f"Tentativa {tentativas}: Não encontrado. Tentando mês anterior...")
 
-    except URLError as e:
-        mes_atual = mes_atual - 1
-        url = 'ftp://ftp.datasus.gov.br/cnes/BASE_DE_DADOS_CNES_' + str(ano_atual) + str(mes_atual) + '.ZIP'
-        # Caminho para o arquivo ZIP
-        caminho_zip = 'BASE_DE_DADOS_CNES_' + str(ano_atual) + str(mes_atual) + '.ZIP'
-        local_filename = 'BASE_DE_DADOS_CNES_' + str(ano_atual) + str(mes_atual) + '.ZIP'
-
-        try:
-            resposta = urllib.request.urlopen(url)
-
-        except URLError as e:
-            ano_atual = ano_atual - 1
-            mes_atual = 12
-            url = 'ftp://ftp.datasus.gov.br/cnes/BASE_DE_DADOS_CNES_' + str(ano_atual) + str(mes_atual) + '.ZIP'
-            # Caminho para o arquivo ZIP
-            caminho_zip = 'BASE_DE_DADOS_CNES_' + str(ano_atual) + str(mes_atual) + '.ZIP'
-            local_filename = 'BASE_DE_DADOS_CNES_' + str(ano_atual) + str(mes_atual) + '.ZIP'
-
-    return url, caminho_zip, local_filename
 
 
 def baixarArquivosCSV(**kwargs):
-    import os
-    import shutil
-    import urllib.request
-    import zipfile
-
+   
     ti = kwargs['ti']
     url, caminho_zip, local_filename = ti.xcom_pull(task_ids='pegar_url')
     pasta_destino = Variable.get("path_file_cnes")
