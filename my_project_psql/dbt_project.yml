@@ -14,7 +14,7 @@ profile: 'my_project'
 model-paths: ["models"]
 analysis-paths: ["analyses"]
 test-paths: ["tests"]
-seed-paths: ["seeds"]
+seed-paths: ["cnes_csv_files"]
 macro-paths: ["macros"]
 snapshot-paths: ["snapshots"]
 
