@@ -360,3 +360,12 @@ renomear_task = PythonOperator(
 ```
 
 A partir daqui, temos o nosso Data Lake. O próximo passo é definir como inserir os dados dentro de um banco de dados. O objetivo é utilizar Python e o PostgresHook para inserir os dados em um banco de dados.
+
+[INSTALAÇÃO](https://github.com/Jezandre/eng_dados_cnes/blob/main/INSTALACAO.md)
+[DATA_LAKE](https://github.com/Jezandre/eng_dados_cnes/blob/main/CRIANDO_DATA_LAKE.md)
+[CAMADA_BRONZE](https://github.com/Jezandre/eng_dados_cnes/blob/main/CRIANDO_CAMADA_BRONZE.md)
+[ENTENDENDO_OS_DADOS]()
+[PERGUNTAS_DE_NEGOCIO]()
+[CAMADA_SILVER]()
+[CAMADA_GOLD]()
+[DASHBOARD]()

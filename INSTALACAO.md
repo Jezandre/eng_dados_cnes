@@ -539,3 +539,12 @@ No airflow você insere o endereço credenciais e define qual o banco de dados v
 
 
 Ambiente configurado e testado próximo passo inciar o processo para a criação das nossas camadas bronze, silver e Gold.
+
+[INSTALAÇÃO](https://github.com/Jezandre/eng_dados_cnes/blob/main/INSTALACAO.md)
+[DATA_LAKE](https://github.com/Jezandre/eng_dados_cnes/blob/main/CRIANDO_DATA_LAKE.md)
+[CAMADA_BRONZE](https://github.com/Jezandre/eng_dados_cnes/blob/main/CRIANDO_CAMADA_BRONZE.md)
+[ENTENDENDO_OS_DADOS]()
+[PERGUNTAS_DE_NEGOCIO]()
+[CAMADA_SILVER]()
+[CAMADA_GOLD]()
+[DASHBOARD]()

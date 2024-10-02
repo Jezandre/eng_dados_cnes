@@ -154,3 +154,12 @@ inserir_dados_task = PythonOperator(
 ```
 
 Tasks prontas, temos a nossa estrutura de inserção de dados na camada bronze pronta para as próximas etapas de tratamento. Próximo passo será entender um pouco melhor a estrutura dos dados fornecidos pelo CNES para que possamos criar perguntas de negócio e analisar os dados e tabelas que poderemos utilizar.
+
+[INSTALAÇÃO](https://github.com/Jezandre/eng_dados_cnes/blob/main/INSTALACAO.md)
+[DATA_LAKE](https://github.com/Jezandre/eng_dados_cnes/blob/main/CRIANDO_DATA_LAKE.md)
+[CAMADA_BRONZE](https://github.com/Jezandre/eng_dados_cnes/blob/main/CRIANDO_CAMADA_BRONZE.md)
+[ENTENDENDO_OS_DADOS]()
+[PERGUNTAS_DE_NEGOCIO]()
+[CAMADA_SILVER]()
+[CAMADA_GOLD]()
+[DASHBOARD]()
