@@ -1,34 +1,34 @@
 # Criação do Data Lake de dados do CNES - Portal Data SUS
 
-Há um certo tempo atrás eu já havia desenvolvido essa rotina para realizar o download dos dados. Então vou reaproveitar essa rotina para esse ponta pé inicial do projeto.
+Há algum tempo, eu já havia desenvolvido essa rotina para realizar o download dos dados. Então, vou reaproveitar essa rotina para dar o pontapé inicial no projeto.
 
-O CNES como já falei é um portal nacional para estabelecimentos de Saúde, e ele disponibiliza para quem quiser o download dos seus dados em um servidor ftp. Vocês podem visualizar isso em:
+O CNES, como já falei, é um portal nacional para estabelecimentos de saúde, e ele disponibiliza para quem quiser o download dos seus dados em um servidor FTP. Vocês podem visualizar isso em:
 
 [Base de dados CNES](https://cnes.datasus.gov.br/pages/downloads/arquivosBaseDados.jsp)
 
-Para quem tem sempre a desculpa onde eu obtenho dados reais pra fazer meus projetos fica a dica. É possível criar diversas análises e montar alguns insights a partir deles, seja na questão mercadológica seja na questão de saúde pública.
+Para quem sempre tem a desculpa de onde obter dados reais para fazer seus projetos, fica a dica: é possível criar diversas análises e montar alguns insights a partir deles, seja na questão mercadológica ou na questão de saúde pública.
 
-Quando trabalhei com essas bases o desafio era automatizar, de maneira que os dados ficassem sempre atualizados e disponíveis sem a minha intervenção. O CNES disponibiliza os dados mensalmente na plataforma compactados em formato CSV. Se não me engano são mais de 50 ou 100 tabelas, então a princípio o desafio é pegar sempre a base mais atualizada.
+Quando trabalhei com essas bases, o desafio era automatizar de maneira que os dados ficassem sempre atualizados e disponíveis sem a minha intervenção. O CNES disponibiliza os dados mensalmente na plataforma, compactados em formato CSV. Se não me engano, são mais de 50 ou 100 tabelas, então, a princípio, o desafio é pegar sempre a base mais atualizada.
 
-Nesse primeiro passo vamos desenvolver uma rotina em python em conjunto com o airflow, uma maneira de sempre pegar o mais atual dos arquivos, decompactá-los e renomeá-los.
+Nesse primeiro passo, vamos desenvolver uma rotina em Python em conjunto com o Airflow, de maneira a sempre pegar os arquivos mais atuais, descompactá-los e renomeá-los.
 
 # Mãos a obra
 
-As configurações já foram descritas no post anterior então vamos direto para a organização da estrutura que utilizaremos.
+As configurações já foram descritas no post anterior, então vamos direto para a organização da estrutura que utilizaremos.
 
-Como boa prática a meu ver é sempre bom utilizar arquivos diferentes para coisas diferentes e diretórios diferentes também.
+Como boa prática, a meu ver, é sempre bom utilizar arquivos diferentes para coisas diferentes e diretórios diferentes também.
 
-Então teremos a seguinte estrutura de pasta:
+Teremos a seguinte estrutura de pastas:
 
-- cnes_csv_files: Local onde vamos salvar os arquivos do CNES.
+- cnes_csv_files: local onde vamos salvar os arquivos do CNES.
 
-- dags: Local onde ficará os arquivos de dag
+- dags: local onde ficarão os arquivos de DAG.
 
-- dags/Python_Funcions: Local onde vamos colocar as funções que utilizaremos no Python Operator
+- dags/Python_Functions: local onde vamos colocar as funções que utilizaremos no Python Operator.
 
-- dags/Pyspark: Local onde iremos salvar os arquivos de execução do PySpark
+- dags/PySpark: local onde iremos salvar os arquivos de execução do PySpark.
 
-Em resumo tudo que é função do Python ficará em Python Funcions e é a partir daí que iremos iniciar.
+Em resumo, tudo que for função do Python ficará em Python_Functions, e é a partir daí que iremos iniciar.
 
 # DAGS
 
@@ -80,13 +80,13 @@ dag = DAG(
 ```
 ## Pegar link para download
 
-A primeira dag que iremos utilizar será responsável pela identificação do link de Download. O CNES utiliza um padrão da seguinte maneira:
+A primeira DAG que iremos utilizar será responsável pela identificação do link de download. O CNES utiliza um padrão da seguinte maneira:
 
 ```ftp://ftp.datasus.gov.br/cnes/BASE_DE_DADOS_CNES_<ANOMES>```
 
-Então a lógica basicamente é identificar o mês e o ano mais recente em que os dados estão disponíveis. Como falei anteriormente os dados são disponibilizados mensalmente.
+Então, a lógica, basicamente, é identificar o mês e o ano mais recente em que os dados estão disponíveis. Como falei anteriormente, os dados são disponibilizados mensalmente.
 
-A primeira função que utilizaremos tem a funcionadlidade de identificar se a URL está disponível. Nela temos um time out, pois por mais que o python consiga identificar que aquele link existe, ele fica travado e quando ele fica travado é porque o link de fato existe:
+A primeira função que utilizaremos tem a funcionalidade de identificar se a URL está disponível. Nela, temos um timeout, pois, por mais que o Python consiga identificar que aquele link existe, ele pode ficar travado, e quando isso acontece, é porque o link, de fato, existe:
 
 ```py
 def verifica_url_existe(url, timeout=10):
@@ -103,13 +103,11 @@ def verifica_url_existe(url, timeout=10):
 Parâmetros:
 
 - url (string): O endereço URL a ser testado, como um FTP ou HTTP.
-timeout (int, opcional): Tempo limite, em segundos, que a função espera para estabelecer uma conexão com a URL. O valor padrão é 10 segundos.
-
+timeout (int, opcional): Tempo limite, em segundos, que a função espera para estabelecer uma - conexão com a URL. O valor padrão é 10 segundos.
 Retornos:
 
 - True: Se a URL é acessível dentro do tempo especificado.
 - False: Se a URL não pode ser acessada, seja por erro na conexão ou por exceder o tempo limite.
-
 Tratamento de Exceções:
 
 A função é projetada para lidar com dois tipos de exceções:
@@ -118,7 +116,7 @@ A função é projetada para lidar com dois tipos de exceções:
 
 - Exception: Captura qualquer outro erro inesperado que possa ocorrer durante a tentativa de conexão, garantindo que a função sempre retorne False sem interromper o fluxo do programa.
 
-A segunda função é a que retornará os valores de url, pasta de download e nome do local e armazenará esses nomes para o próximo passo que será a extração.
+A segunda função é a que retornará os valores de URL, pasta de download e nome do arquivo, armazenando esses nomes para o próximo passo, que será a extração.
 
 ```py
 def testarURL():
@@ -284,13 +282,13 @@ baixar_arquivos_task = PythonOperator(
 
 ## Renomeando os arquivos
 
-Os arquivos quando descompactados eles vem com o seguinte padrão:
+Os arquivos, quando descompactados, vêm com o seguinte padrão:
 
 `<nomeTable><MesAno>.csv`
 
-Nesse caso a gente não quer o mês ano, por isso iremos utilizar essa etapa. Talvez ela seja desnecessária, pois nas próxmias etapas poderíamos apenas ignorar os número, mas por via das dúvidas eu irei utilizar esse processo.
+Nesse caso, não queremos o mês e o ano; por isso, iremos utilizar essa etapa. Talvez ela seja desnecessária, pois, nas próximas etapas, poderíamos apenas ignorar os números, mas, por via das dúvidas, eu irei utilizar esse processo.
 
-O código consiste nada mais nada menos que um for que rastreia todos os dados na pasta e renomeia os arquivos removendo o `AnoMês`. 
+O código consiste, nada mais nada menos, que em um loop que rastreia todos os dados na pasta e renomeia os arquivos, removendo o `AnoMês`.
 
 ```py
 def renomearArquivos(**kwargs):
@@ -361,4 +359,4 @@ renomear_task = PythonOperator(
 )
 ```
 
-A partir daqui temos o nosso Data lake. O próximo passo é definir como inserir os dados dentro de um banco de dados, o objetivo é utilizar o DBT para este processo através do método COPY. Outras informações importantes é navegarmos dentro dos dados para entender a estrutura e os campos que eles nos disponibiliza.
+A partir daqui, temos o nosso Data Lake. O próximo passo é definir como inserir os dados dentro de um banco de dados. O objetivo é utilizar Python e o PostgresHook para inserir os dados em um banco de dados.

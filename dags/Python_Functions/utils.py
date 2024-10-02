@@ -144,7 +144,6 @@ def selecionarArquivosCSVutilizados(**kwargs):
 def criarTabela(**kwargs):
     csv_files = kwargs['ti'].xcom_pull(task_ids='obter_arquivos_csv')
     for table_name, file_path in csv_files.items():
-        # Ler o cabeçalho para obter os nomes das colunas
         with open(file_path, 'r', encoding='latin-1') as file:
             columns = file.readline().strip().split(';')
             columns = [col.replace('"', '').strip() for col in columns]    
@@ -156,66 +155,12 @@ def criarTabela(**kwargs):
                 sql=create_table_sql,
             )
         create_table_task.execute(kwargs)
-    # return create_table_task
 
-def inserirDadosEmChunks(table_name, file_path, chunk_size=1000):
+def inserirDados(**kwargs):
+    
+    csv_files = kwargs['ti'].xcom_pull(task_ids='obter_arquivos_csv')
     hook = PostgresHook(postgres_conn_id='airflow')
     # Limpar dados anteriores
-    hook.run(f'TRUNCATE TABLE "bronze"."CNES_{table_name};')
-
-    # Ler o CSV em chunks
-    for chunk in pd.read_csv(file_path, sep=';', encoding='latin-1', chunksize=chunk_size):
-        for index, row in chunk.iterrows():
-            values = tuple(row.values)
-            insert_sql = f'INSERT INTO "bronze"."CNES_{table_name}" VALUES ({", ".join(["%s"] * len(values))})'
-            hook.run(insert_sql, parameters=values)
-
-def processarCSV(**kwargs):
-    csv_files = kwargs['ti'].xcom_pull(task_ids='obter_arquivos_csv')
-
     for table_name, file_path in csv_files.items():
-        # Ler o cabeçalho para obter os nomes das colunas
-        with open(file_path, 'r', encoding='latin-1') as file:
-            columns = file.readline().strip().split(';')
-            columns = [col.replace('"', '').strip() for col in columns]
-        
-        # Criar a tabela
-        # criar_tabela_task = criarTabela(table_name, columns)
-        # criar_tabela_task.execute(kwargs)
-
-        # Inserir dados
-        inserirDadosEmChunks(table_name, file_path)
-
-# def criarTabelasAPartirDoCSV(**kwargs):
-
-#     csv_files = kwargs['ti'].xcom_pull(task_ids='obter_arquivos_csv')
-
-#     for table_name, file_path in csv_files.items():
-        
-#         with open(file_path, 'r', encoding='latin-1') as file:
-#             columns = file.readline().strip().split(';')
-#         columns = [col.replace('"', '').strip() for col in columns]        
-#         columns_str = ', '.join([f'"{col}" VARCHAR' for col in columns])
-#         create_table_sql = f'CREATE TABLE IF NOT EXISTS "BRONZE.CNES_{table_name}" ({columns_str});'
-#         create_table_task = PostgresOperator(
-#             task_id=f'create_table_{table_name}',
-#             postgres_conn_id='airflow',
-#             sql=create_table_sql,
-#             dag=kwargs['dag']
-#         )
-#         create_table_task.execute(kwargs)
-
-# def inserirDadosNasTabelas(**kwargs):
-#     csv_files = kwargs['ti'].xcom_pull(task_ids='obter_arquivos_csv')
-#     for table_name, file_path in csv_files.items():
-#         tuncate_sql = f'TRUNCATE TABLE "bronze"."CNES_{table_name}'
-#         hook = PostgresHook(postgres_conn_id='airflow')
-#         hook.run(tuncate_sql)
-#         with open(file_path, 'r', encoding='latin-1') as file:
-#             # Pular o cabeçalho
-#             next(file)
-#             for line in file:
-#                 values = [value.replace('"', '').strip() for value in line.strip().split(';')]                
-#                 insert_sql = f'INSERT INTO "bronze"."CNES_{table_name} VALUES ({', '.join(['%s'] * len(values))})'
-#                 hook = PostgresHook(postgres_conn_id='airflow')
-#                 hook.run(insert_sql, parameters=values)
+        hook.run(f'TRUNCATE TABLE "bronze"."CNES_{table_name}";')  
+        hook.run(f'COPY "bronze"."CNES_{table_name}" FROM \'{str(file_path)}\' DELIMITER \';\' CSV HEADER ENCODING \'LATIN1\'')
