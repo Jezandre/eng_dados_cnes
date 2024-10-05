@@ -203,7 +203,7 @@ pegar_url_task = PythonOperator(
 - **provide_context**: 
   - `True`: Esta configuração permite que o contexto da execução (incluindo informações sobre a DAG, execução e outros parâmetros) seja passado para a função `testarURL`. Isso é útil para obter informações adicionais durante a execução, se necessário.
 
-## Realizando o download e descompactando para o DataLake
+## Realizando o download e descompactando arquivos
 
 Link definido, o próximo passo agora é realizar o download do arquivo. Em média o tamanho dos arquivos chegam a mais de 500mb. Então o download pode demorar um pouquinho.
 
