@@ -1,6 +1,6 @@
 # O que é o CNES e pra que ele serve
 
-Para entendermos os dados que iremos trabalhar o primeiro passo e mais importante é entender o que é o CNES. 
+Para entendermos os dados com os quais iremos trabalhar, o primeiro e mais importante passo é entender o que é o CNES.
 
 O CNES (Cadastro Nacional de Estabelecimentos de Saúde) é um sistema criado pelo Ministério da Saúde no Brasil para registrar todos os estabelecimentos de saúde, tanto públicos quanto privados, que prestam serviços à população. Esse cadastro existe para garantir uma organização e um controle eficiente do setor de saúde, oferecendo dados cruciais para o planejamento e a gestão dos serviços de saúde em nível municipal, estadual e federal.
 
@@ -40,7 +40,7 @@ Aposto que você não conhecia essa fonte de informação, mas o CNES é uma fer
 
 # Entendendo as tabelas disponíveis
 
-O CNES disponibiliza em seu portal toda a documentação e o dicionário de dados o que vai facilitar e muito o nosso processo de modelagem. A partir dele poderemos compreender melhor e estruturar as nossas análise que iremos realizar. 
+O CNES disponibiliza em seu portal toda a documentação e o dicionário de dados, o que facilitará significativamente o nosso processo de modelagem. Com essas informações, poderemos compreender melhor e estruturar as análises que iremos realizar.
 
 O site é o seguinte:
 
@@ -49,7 +49,7 @@ O site é o seguinte:
 ![image](https://github.com/user-attachments/assets/b0054b4c-4658-44a8-b990-b3eb54f93eaf)
 
 
-A primeira tabela que será importante para trabalharmos se chama tabela dominio. Nela temos as informações importantes para inciarmos os trabalhos. através dela é possível identificar e localizar o de para necessário para das tabelas em um arquivo só. 
+A primeira tabela que será importante para o nosso trabalho se chama tabela domínio. Nela, temos as informações essenciais para iniciarmos as atividades. Através dela, é possível identificar e localizar o "de/para" necessário para as tabelas em um único arquivo.
 
 ![image](https://github.com/user-attachments/assets/add2d79c-5030-4c7b-b2c0-9d1be9ae0c79)
 
@@ -67,9 +67,9 @@ Com essa estrutura, analistas e gestores de saúde podem utilizar os códigos de
 
 ## Dicionário de dados 
 
-O dicionário de dados traz todas as informções de campos e tabelas disponíveis para iniciarmos a modelagem dos dados. Através dela podemos nos orientar pelos tipos de dados e tipos de informações disponíveis.
+O dicionário de dados apresenta todas as informações sobre os campos e tabelas disponíveis para iniciarmos a modelagem dos dados. Através dele, podemos nos orientar pelos tipos de dados e pelas informações disponíveis.
 
-No CNES, as tabelas são distribuídas em dois grupos principais: TB e RL, e esses prefixos indicam o tipo de dado ou relacionamento que cada tabela armazena.
+No CNES, as tabelas são distribuídas em dois grupos principais: TB e RL. Esses prefixos indicam o tipo de dado ou relacionamento que cada tabela armazena.
 
 **TB (Tabela Básica)**: Essas tabelas contêm informações principais, mais estáticas ou "básicas" dos estabelecimentos de saúde. Elas armazenam dados descritivos, como o nome do estabelecimento, endereço, tipo de atendimento, entre outros. São as tabelas que centralizam as características mais fundamentais de cada entidade no sistema CNES.
 
@@ -89,9 +89,9 @@ TB: Tabelas que contêm os dados principais, geralmente descritivos.
 
 RL: Tabelas que registram os relacionamentos entre diferentes entidades, mostrando como elas se conectam no sistema.
 
-Em em modelo dimensional as nossas tabelas TB seriam as tabelas dimensão enquando que as tabelas RL seriam as tabelas Fato.
+Em um modelo dimensional, as nossas tabelas TB correspondem às tabelas dimensão, enquanto as tabelas RL são as tabelas fato.
 
-A partir do conhecimento dos dados que temos podemos agora trbalhar para criar os nossos modelos de dados baseados nas perguntas de negócio que queremos responder a partir destes dados. 
+Com o conhecimento dos dados que temos, agora podemos trabalhar para criar nossos modelos de dados, baseando-nos nas perguntas de negócio que queremos responder a partir dessas informações.
 
-Então continue seguindo que tem bastante coisa legal para ser explorado ainda.
+Continue seguindo, pois ainda há bastante conteúdo interessante a ser explorado.
 
