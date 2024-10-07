@@ -42,11 +42,17 @@ Aposto que você não conhecia essa fonte de informação, mas o CNES é uma fer
 
 O CNES disponibiliza em seu portal toda a documentação e o dicionário de dados o que vai facilitar e muito o nosso processo de modelagem. A partir dele poderemos compreender melhor e estruturar as nossas análise que iremos realizar. 
 
-O site é o sgeuinte:
+O site é o seguinte:
 
 [Documentação portal CNES](https://cnes.datasus.gov.br/pages/downloads/documentacao.jsp)
 
+![image](https://github.com/user-attachments/assets/b0054b4c-4658-44a8-b990-b3eb54f93eaf)
+
+
 A primeira tabela que será importante para trabalharmos se chama tabela dominio. Nela temos as informações importantes para inciarmos os trabalhos. através dela é possível identificar e localizar o de para necessário para das tabelas em um arquivo só. 
+
+![image](https://github.com/user-attachments/assets/add2d79c-5030-4c7b-b2c0-9d1be9ae0c79)
+
 
 A tabela Domínio do CNES serve para padronizar e categorizar informações específicas dentro do sistema. Ela contém códigos e descrições padronizados para diferentes classificações, como tipos de serviços, categorias de estabelecimentos, e outras variáveis que precisam ser uniformemente referenciadas nas demais tabelas do sistema CNES.
 
