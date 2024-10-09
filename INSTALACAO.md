@@ -543,7 +543,7 @@ Ambiente configurado e testado próximo passo inciar o processo para a criação
 - [INSTALAÇÃO](https://github.com/Jezandre/eng_dados_cnes/blob/main/INSTALACAO.md)
 - [DATA_LAKE](https://github.com/Jezandre/eng_dados_cnes/blob/main/CRIANDO_DATA_LAKE.md)
 - [CAMADA_BRONZE](https://github.com/Jezandre/eng_dados_cnes/blob/main/CRIANDO_CAMADA_BRONZE.md)
-- [ENTENDENDO_OS_DADOS]()
+- [ENTENDENDO_OS_DADOS](https://github.com/Jezandre/eng_dados_cnes/blob/main/ENTENDENDO_OS_DADOS.md)
 - [PERGUNTAS_DE_NEGOCIO]()
 - [CAMADA_SILVER]()
 - [CAMADA_GOLD]()

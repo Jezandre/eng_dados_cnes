@@ -9,9 +9,6 @@ Na camada silver, temos os primeiros tratamentos, e a camada gold é onde realiz
 Nesse caso, partiremos para a inserção e escolha daqueles arquivos que fizemos o download nas etapas anteriores. A princípio, aqui vou mostrar apenas como é realizado o processo de inserção. Assim que definirmos as regras de negócio, partiremos para a exploração dos dados e a definição de quais tabelas iremos utilizar.
 # Criando a rotina de inserção
 
-
-Aqui está o texto corrigido:
-
 Como expliquei na parte de criação do Data Lake, o CNES disponibiliza uma grande quantidade de tabelas e dados para que possamos utilizar em nossas análises. Nesse momento, nosso foco são duas coisas: criar a rotina que vai pegar uma dessas tabelas e, em seguida, inseri-la em um banco de dados. No primeiro momento, vou utilizar o PostgreSQL.
 
 Para este processo, utilizaremos três tasks, as quais chamei de selecionar_arquivos_task, criar_tabelas_task e inserir_dados_task.
@@ -158,7 +155,7 @@ Tasks prontas, temos a nossa estrutura de inserção de dados na camada bronze p
 - [INSTALAÇÃO](https://github.com/Jezandre/eng_dados_cnes/blob/main/INSTALACAO.md)
 - [DATA_LAKE](https://github.com/Jezandre/eng_dados_cnes/blob/main/CRIANDO_DATA_LAKE.md)
 - [CAMADA_BRONZE](https://github.com/Jezandre/eng_dados_cnes/blob/main/CRIANDO_CAMADA_BRONZE.md)
-- [ENTENDENDO_OS_DADOS]()
+- [ENTENDENDO_OS_DADOS](https://github.com/Jezandre/eng_dados_cnes/blob/main/ENTENDENDO_OS_DADOS.md)
 - [PERGUNTAS_DE_NEGOCIO]()
 - [CAMADA_SILVER]()
 - [CAMADA_GOLD]()
