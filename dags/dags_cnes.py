@@ -81,7 +81,7 @@ selecionar_arquivos_task = PythonOperator(
 
 criar_tabelas_task = PythonOperator(
     task_id='criar_tabelas_from_csv',
-    python_callable=criarTabela,
+    python_callable=criarTabelas,
     dag=dag
 )
 

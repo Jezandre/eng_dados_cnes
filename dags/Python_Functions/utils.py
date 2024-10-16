@@ -141,20 +141,29 @@ def selecionarArquivosCSVutilizados(**kwargs):
     return csv_files
 
 
-def criarTabela(**kwargs):
+
+def criarTabelaCsv(table_name, file_path, **kwargs):
+    with open(file_path, 'r', encoding='latin-1') as file:
+        columns = file.readline().strip().split(';')
+        columns = [col.replace('"', '').strip() for col in columns]    
+        columns_str = ', '.join([f'"{col}" VARCHAR' for col in columns])
+        create_table_sql = f'CREATE TABLE IF NOT EXISTS "bronze"."CNES_{table_name}" ({columns_str});'
+
+        create_table_task = PostgresOperator(
+            task_id=f'create_table_{table_name}',
+            postgres_conn_id='airflow',
+            sql=create_table_sql,
+            dag=kwargs['dag'],  # Certifique-se de que a DAG está sendo passada corretamente
+        )
+
+    return create_table_task
+
+
+def criarTabelas(**kwargs):
     csv_files = kwargs['ti'].xcom_pull(task_ids='obter_arquivos_csv')
+    
     for table_name, file_path in csv_files.items():
-        with open(file_path, 'r', encoding='latin-1') as file:
-            columns = file.readline().strip().split(';')
-            columns = [col.replace('"', '').strip() for col in columns]    
-            columns_str = ', '.join([f'"{col}" VARCHAR' for col in columns])
-            create_table_sql = f'CREATE TABLE IF NOT EXISTS "bronze"."CNES_{table_name}" ({columns_str});'
-            create_table_task = PostgresOperator(
-                task_id=f'create_table_{table_name}',
-                postgres_conn_id='airflow',
-                sql=create_table_sql,
-            )
-        create_table_task.execute(kwargs)
+        criarTabelaCsv(table_name, file_path, **kwargs)
 
 def inserirDados(**kwargs):
     
