@@ -25,7 +25,16 @@ import os
 import shutil
 import urllib.request
 import zipfile
-
+from dbfread import DBF
+import requests
+import pandas as pd
+import numpy as np
+from sqlalchemy import create_engine
+from unidecode import unidecode
+from geopy.geocoders import Nominatim
+from geopy.exc import GeocoderUnavailable
+from requests.exceptions import ReadTimeout
+from geopy.extra.rate_limiter import RateLimiter
 
 
 # Função que verifica se a URL existe
@@ -135,7 +144,7 @@ def selecionarArquivosCSVutilizados(**kwargs):
         'tb_municipio': str(pasta_destino) + '/tbMunicipio.csv',
         'rl_estab_atend_prest_conv': str(pasta_destino) + '/rlEstabAtendPrestConv.csv',
         'tb_estado': str(pasta_destino) + '/tbEstado.csv',
-        'tb_servico_especializado': str(pasta_destino) + '/tbServicoEspecializado.csv'
+        'tb_servico_especializado': str(pasta_destino) + '/tbServicoEspecializado.csv',
     }
 
     return csv_files
@@ -173,3 +182,72 @@ def inserirDados(**kwargs):
     for table_name, file_path in csv_files.items():
         hook.run(f'TRUNCATE TABLE "bronze"."CNES_{table_name}";')  
         hook.run(f'COPY "bronze"."CNES_{table_name}" FROM \'{str(file_path)}\' DELIMITER \';\' CSV HEADER ENCODING \'LATIN1\'')
+
+
+def rodarQuery(sql_query):
+    # Configurações de conexão
+    db_url = 'postgresql+psycopg2://airflow:airflow@localhost:5432/airflow_db'
+
+    try:
+        # Criando a conexão usando SQLAlchemy
+        engine = create_engine(db_url)
+        
+        # Executando a query e armazenando o resultado em um DataFrame
+        with engine.connect() as connection:
+            df = pd.read_sql(sql_query, connection)
+        
+        return df
+
+    except Exception as error:
+        print(f"Erro ao executar a query: {error}")
+        return None
+    
+def inserirDadosDf():
+    # Construa a URL de conexão (para PostgreSQL, por exemplo)
+    db_url = 'postgresql+psycopg2://airflow:airflow@localhost:5432/airflow_db'
+
+    # Crie a engine de conexão
+    engine = create_engine(db_url)
+    return engine
+
+def adicionarCoordenadas():
+    geolocator = Nominatim(user_agent="municipios_ibge", timeout=10)  # Aumenta o tempo limite para 10 segundos
+    geocode = RateLimiter(geolocator.geocode, min_delay_seconds=1.0)
+    
+    # DataFrame
+    query = 'SELECT * FROM BRONZE."CNES_tb_municipio";'
+    df = rodarQuery(query)
+    Municipio='NO_MUNICIPIO'
+    Sigla='CO_SIGLA_ESTADO'
+    
+    total = 0
+    latitudes = []
+    longitudes = []
+
+    for _, row in df.iterrows():
+        try:
+            location = geocode(f"{row[Municipio]}, {row[Sigla]}, Brasil")
+            if location:
+                latitudes.append(location.latitude)
+                longitudes.append(location.longitude)
+                total += 1
+                print(f"Total obtido: {total}")
+            else:
+                latitudes.append(None)
+                longitudes.append(None)
+        except (GeocoderUnavailable, ReadTimeout):
+            latitudes.append(None)
+            longitudes.append(None)
+            print(f"Falha ao obter coordenadas para {row[Municipio]}, {row[Sigla]} - Continuando com o próximo item.")
+
+    df['Latitude'] = latitudes
+    df['Longitude'] = longitudes
+    
+    # Inserir no banco dedados
+    df.to_sql(
+    name='CNES_tb_municipio',
+    con=inserirDadosDf(), 
+    schema='silver',
+    if_exists='append',
+    index=False
+    )

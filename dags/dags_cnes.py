@@ -47,27 +47,27 @@ dag = DAG(
     )
 
 
-pegar_url_task = PythonOperator(
-    task_id = 'pegar_url',
-    python_callable = testarURL,
-    provide_context = True,
-    dag=dag
-)
+# pegar_url_task = PythonOperator(
+#     task_id = 'pegar_url',
+#     python_callable = testarURL,
+#     provide_context = True,
+#     dag=dag
+# )
 
 
-baixar_arquivos_task = PythonOperator(
-    task_id='baixar_arquivos',
-    python_callable=baixarArquivosCSV,    
-    provide_context=True,
-    dag=dag
-)
+# baixar_arquivos_task = PythonOperator(
+#     task_id='baixar_arquivos',
+#     python_callable=baixarArquivosCSV,    
+#     provide_context=True,
+#     dag=dag
+# )
 
-renomear_arquivos_task = PythonOperator(
-    task_id='renomear_arquivos',
-    python_callable=renomearArquivos,
-    provide_context=True,
-    dag=dag
-)
+# renomear_arquivos_task = PythonOperator(
+#     task_id='renomear_arquivos',
+#     python_callable=renomearArquivos,
+#     provide_context=True,
+#     dag=dag
+# )
 
 
 
@@ -93,4 +93,12 @@ inserir_dados_task = PythonOperator(
     dag=dag
 )
 
-pegar_url_task >> baixar_arquivos_task >> renomear_arquivos_task >> selecionar_arquivos_task >> criar_tabelas_task >> inserir_dados_task
+add_coordenadas = PythonOperator(
+    task_id='adicionar_coordenadas',
+    python_callable=adicionarCoordenadas,
+    provide_context=True,
+    dag=dag
+)
+
+# pegar_url_task >> baixar_arquivos_task >> renomear_arquivos_task >> 
+selecionar_arquivos_task >> criar_tabelas_task >> inserir_dados_task >> add_coordenadas

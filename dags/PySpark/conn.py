@@ -10,3 +10,4 @@ def connPsql():
     }
     return(url, properties)
 
+
