@@ -184,7 +184,6 @@ tables = [
         '"CNES_rl_estab_complementar"',
         '"CNES_cness_rl_estab_serv_calss"',
         '"CNES_tb_tipo_unidade"',
-        '"CNES_tb_municipio"',
         '"CNES_rl_estab_atend_prest_conv"',
         '"CNES_tb_estado"',
         '"CNES_tb_servico_especializado"'
@@ -253,3 +252,196 @@ for table_name in tables:
 
 A tabela que iremos trabalhar especificamente nesse caso é a `CNES_tb_estabelecimento` nela precisamos tratar o campo de longitude e latitude e outros campos caso seja necessário.
 
+Para realizarmos os tratamentos desta tabela, temos campos de data que vêm em formatos diferentes. Nesses casos, utilizaremos o PySpark para realizar as conversões. Aproveitando, também faremos o join com a tabela de municípios e trataremos os estabelecimentos que não possuem coordenadas geográficas ou que possuem coordenadas inválidas.
+
+Para a conversão de datas, utilizaremos as funções a seguir:
+
+```py
+# Converte a coluna de data para o formato yyyy-MM-dd
+def convert_date_format(column):
+    return when(
+        column.like("%/%"), to_date(column, "dd/MM/yyyy")
+    ).when(
+        column.like("%-%"), to_date(column, "dd-MMM-yyyy HH:mm:ss")
+    ).otherwise(column)
+
+# Função de tentativa de conversão para tipo numérico
+def try_cast_numeric(column):
+    return when(col(column).cast("float").isNotNull(), col(column)).otherwise(None)
+```
+- Função: convert_date_format
+
+Essa função converte valores de uma coluna do tipo string para o formato de data padrão (yyyy-MM-dd) no PySpark. Ela verifica o formato atual da string para determinar como realizar a conversão. Caso o formato não seja reconhecido, o valor original da coluna é mantido.
+
+Parâmetros:
+- column (pyspark.sql.column.Column): Coluna cujos valores precisam ser convertidos.
+
+Retorno:
+
+- pyspark.sql.column.Column: Coluna com valores convertidos para o formato de data ou mantidos como estão, se o formato não for reconhecido.
+
+Lógica:
+
+1. Se o valor estiver no formato dd/MM/yyyy (contendo /), será convertido para yyyy-MM-dd usando a função to_date.
+2. Se o valor estiver no formato dd-MMM-yyyy HH:mm:ss (contendo -), será convertido para yyyy-MM-dd usando a função to_date.
+3. Caso o formato não corresponda a nenhum dos acima, o valor original será mantido.
+
+- Função: try_cast_numeric
+
+Essa função tenta converter os valores de uma coluna do tipo string para um valor numérico. Caso a conversão falhe, retorna None.
+
+Parâmetros:
+
+- column (str): Nome da coluna a ser convertida para numérico.
+
+Retorno:
+
+- pyspark.sql.column.Column: Coluna com valores convertidos para tipo numérico (float), ou None em caso de falha na conversão.
+
+Lógica:
+
+1. Verifica se o valor pode ser convertido para float utilizando cast("float").
+2. Se a conversão for bem-sucedida (isNotNull), o valor original da coluna é mantido.
+3. Caso contrário, retorna None.
+
+A tabela final foram selecionadas as colunas que mais faziam sentido e realizei os tratamentos utilizando o seguinte codigo:
+
+```py
+def estabelecimentoEnriquecimento():    
+    # Configurações para o banco PostgreSQL
+    jdbc_url, jdbc_properties = connPsql()
+
+    tabela_name ='"CNES_tb_estabelecimento"'
+
+    # Carregar os dados da tabela CNES_tb_estabelecimento e CNES_tb_municipio (nesta parte, adaptando ao seu contexto de carga de dados)
+    estabelecimento_df = spark.read \
+        .format("jdbc") \
+        .option("url", jdbc_url) \
+        .option("dbtable", f'bronze.{tabela_name}') \
+        .options(**jdbc_properties) \
+        .load()
+
+    municipio_df = spark.read \
+        .format("jdbc") \
+        .option("url", jdbc_url) \
+        .option("dbtable", 'silver."CNES_tb_municipio"') \
+        .options(**jdbc_properties) \
+        .load()
+
+    # Aplicando a função nas colunas de data
+    estabelecimento_df = estabelecimento_df.withColumn(
+        "DT_EXPEDICAO",
+        convert_date_format(
+            estabelecimento_df["DT_EXPEDICAO"]
+            )
+        )
+    estabelecimento_df = estabelecimento_df.withColumn(    
+        "DT_ATUALIZACAO_ORIGEM",
+        convert_date_format(
+            estabelecimento_df["TO_CHAR(DT_ATUALIZACAO_ORIGEM,'DD/MM/YYYY')"]
+            )
+        )
+    # Join entre as tabelas
+    resultado_df = estabelecimento_df.alias("est").join(
+        municipio_df.alias("mun"),
+        col("est.CO_MUNICIPIO_GESTOR") == col("mun.CO_MUNICIPIO"),
+        "left"
+    ).select(
+        "CO_UNIDADE"
+        , "CO_CNES"
+        , "NO_RAZAO_SOCIAL"
+        , "NO_FANTASIA"
+        , "CO_REGIAO_SAUDE"
+        , "CO_MICRO_REGIAO"
+        , "CO_DISTRITO_SANITARIO"
+        , "CO_ATIVIDADE"
+        , "CO_CLIENTELA"
+        , "DT_EXPEDICAO"
+        , "TP_LIC_SANI"
+        , "CO_TURNO_ATENDIMENTO"
+        , "CO_ESTADO_GESTOR"
+        , "CO_MUNICIPIO_GESTOR"
+        , "CO_MOTIVO_DESAB"
+        , "CO_TIPO_UNIDADE"
+        , "TP_GESTAO"
+        , "CO_TIPO_ESTABELECIMENTO"
+        , "CO_ATIVIDADE_PRINCIPAL"
+        , "ST_CONTRATO_FORMALIZADO"
+        , "CO_TIPO_ABRANGENCIA"
+        , "ST_COWORKING"
+        , when(try_cast_numeric("NU_LATITUDE").isNull(), col("mun.Latitude").cast("string"))
+            .otherwise(col("est.NU_LATITUDE")).alias("NU_LATITUDE")
+        , when(try_cast_numeric("NU_LONGITUDE").isNull(), col("mun.Longitude").cast("string"))
+            .otherwise(col("est.NU_LONGITUDE")).alias("NU_LONGITUDE")
+        , "DT_ATUALIZACAO_ORIGEM"
+    )
+
+    # Exibir resultado
+    resultado_df.show()
+    # Escrever o DataFrame otimizado no PostgreSQL
+    resultado_df.write \
+        .jdbc(url=jdbc_url, table=f'silver.{tabela_name}', mode="overwrite", properties=jdbc_properties)
+
+    spark.stop()
+    
+    return print('Tabela enriquecida com sucesso')
+```
+# Função: `estabelecimentoEnriquecimento`
+
+Essa função realiza o enriquecimento dos dados da tabela `CNES_tb_estabelecimento` utilizando informações da tabela `CNES_tb_municipio`. Após o processamento, os dados enriquecidos são armazenados no banco de dados PostgreSQL na camada `silver`.
+
+## Etapas da Função:
+
+1. **Configuração de Conexão com o Banco de Dados**:
+   - Obtém o `jdbc_url` e as `jdbc_properties` por meio da função `connPsql`.
+
+2. **Carregamento de Dados**:
+   - Carrega as tabelas `bronze.CNES_tb_estabelecimento` e `silver.CNES_tb_municipio` do banco de dados PostgreSQL em DataFrames PySpark.
+
+3. **Conversão de Datas**:
+   - Converte as colunas de data `DT_EXPEDICAO` e `DT_ATUALIZACAO_ORIGEM` do DataFrame de estabelecimentos para o formato padrão `yyyy-MM-dd` usando a função `convert_date_format`.
+
+4. **Join entre as Tabelas**:
+   - Realiza um join à esquerda entre as tabelas `CNES_tb_estabelecimento` e `CNES_tb_municipio`, utilizando o código do município (`CO_MUNICIPIO_GESTOR` na tabela de estabelecimentos e `CO_MUNICIPIO` na tabela de municípios).
+
+5. **Tratamento de Latitude e Longitude**:
+   - Para as colunas `NU_LATITUDE` e `NU_LONGITUDE`:
+     - Se o valor não for numérico, substitui pelas coordenadas correspondentes do município.
+     - Caso contrário, mantém o valor original.
+
+6. **Seleção de Colunas**:
+   - Seleciona as colunas relevantes para o resultado, incluindo dados enriquecidos de latitude e longitude.
+
+7. **Escrita no Banco de Dados**:
+   - Salva os dados enriquecidos na camada `silver` do banco de dados PostgreSQL, sobrescrevendo a tabela correspondente.
+
+8. **Finalização**:
+   - Exibe o resultado do DataFrame processado e retorna uma mensagem indicando o sucesso da operação.
+
+## Parâmetros
+- **Nenhum**: A função não recebe parâmetros de entrada.
+
+## Retorno
+- **Nenhum**: A função não retorna valores explícitos, apenas exibe uma mensagem indicando o sucesso da operação.
+
+---
+
+## Dependências
+
+- Funções necessárias:
+  - `connPsql`: Configuração da conexão com o banco de dados.
+  - `convert_date_format`: Conversão de strings para o formato de data.
+  - `try_cast_numeric`: Validação de valores numéricos.
+
+---
+
+Com isso os dados de estabelecimento do CNES estão prontos para enviarmos para a camada gold e criarmos nossas análises
+
+- [INSTALAÇÃO](https://github.com/Jezandre/eng_dados_cnes/blob/main/INSTALACAO.md)
+- [DATA_LAKE](https://github.com/Jezandre/eng_dados_cnes/blob/main/CRIANDO_DATA_LAKE.md)
+- [CAMADA_BRONZE](https://github.com/Jezandre/eng_dados_cnes/blob/main/CRIANDO_CAMADA_BRONZE.md)
+- [ENTENDENDO_OS_DADOS](https://github.com/Jezandre/eng_dados_cnes/blob/main/ENTENDENDO_OS_DADOS.md)
+- [PERGUNTAS_DE_NEGOCIO]()
+- [CAMADA_SILVER]()
+- [CAMADA_GOLD]()
+- [DASHBOARD]()

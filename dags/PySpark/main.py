@@ -1,5 +1,5 @@
 from pyspark_functions import *
-
+from pyspark_estabelecimento import *
 # Inicie a sessão Spark
 spark = SparkSession.builder \
     .appName("PostgreSQL to Silver Layer") \
@@ -12,7 +12,6 @@ tables = [
         '"CNES_rl_estab_complementar"',
         '"CNES_cness_rl_estab_serv_calss"',
         '"CNES_tb_tipo_unidade"',
-        '"CNES_tb_municipio"',
         '"CNES_rl_estab_atend_prest_conv"',
         '"CNES_tb_estado"'
         ]
@@ -43,3 +42,5 @@ for table_name in tables:
         .mode("overwrite") \
         .save()
 
+# Executar tratamento na Tabela 
+estabelecimentoEnriquecimento()

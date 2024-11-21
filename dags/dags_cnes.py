@@ -4,6 +4,7 @@ from airflow.operators.python_operator import BranchPythonOperator
 from airflow.operators.email_operator import EmailOperator
 from airflow.sensors.filesystem import FileSensor
 from airflow.providers.postgres.operators.postgres import PostgresOperator
+from airflow.operators.bash import BashOperator
 from airflow.models import Variable
 from airflow.utils.task_group import TaskGroup
 from airflow.hooks.postgres_hook import PostgresHook
@@ -71,27 +72,27 @@ dag = DAG(
 
 
 
-selecionar_arquivos_task = PythonOperator(
-    task_id='obter_arquivos_csv',
-    python_callable=selecionarArquivosCSVutilizados,
-    provide_context=True,
-    dag=dag,
-)
+# selecionar_arquivos_task = PythonOperator(
+#     task_id='obter_arquivos_csv',
+#     python_callable=selecionarArquivosCSVutilizados,
+#     provide_context=True,
+#     dag=dag,
+# )
 
 
-criar_tabelas_task = PythonOperator(
-    task_id='criar_tabelas_from_csv',
-    python_callable=criarTabelas,
-    dag=dag
-)
+# criar_tabelas_task = PythonOperator(
+#     task_id='criar_tabelas_from_csv',
+#     python_callable=criarTabelas,
+#     dag=dag
+# )
 
 
-inserir_dados_task = PythonOperator(
-    task_id='inserir_dados',
-    python_callable=inserirDados,
-    provide_context=True,
-    dag=dag
-)
+# inserir_dados_task = PythonOperator(
+#     task_id='inserir_dados',
+#     python_callable=inserirDados,
+#     provide_context=True,
+#     dag=dag
+# )
 
 add_coordenadas = PythonOperator(
     task_id='adicionar_coordenadas',
@@ -100,5 +101,14 @@ add_coordenadas = PythonOperator(
     dag=dag
 )
 
+# Tarefa para executar um script PySpark
+run_pyspark_job = BashOperator(
+    task_id='run_pyspark_job',
+    bash_command="""spark-submit --jars /home/jezandre/airflow/postgresql-42.6.0.jar /home/jezandre/airflow/dags/PySpark/main.py""",
+    dag=dag
+)
+
+
 # pegar_url_task >> baixar_arquivos_task >> renomear_arquivos_task >> 
-selecionar_arquivos_task >> criar_tabelas_task >> inserir_dados_task >> add_coordenadas
+# selecionar_arquivos_task >> criar_tabelas_task >> inserir_dados_task >> 
+add_coordenadas >> run_pyspark_job

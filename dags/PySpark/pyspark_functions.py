@@ -4,6 +4,7 @@ from pyspark.sql.functions import col, when, to_date, regexp_replace, date_forma
 from pyspark.sql.types import *
 from conn import *
 
+
 # Inicie a sessão Spark
 spark = SparkSession.builder \
     .appName("PostgreSQL to Silver Layer") \
