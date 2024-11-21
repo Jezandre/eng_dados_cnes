@@ -1,7 +1,4 @@
-from pyspark.sql import SparkSession
-from pyspark.sql.types import *
-from conn import *
-
+from pyspark_functions import *
 
 # Inicie a sessão Spark
 spark = SparkSession.builder \
@@ -17,42 +14,8 @@ tables = [
         '"CNES_tb_tipo_unidade"',
         '"CNES_tb_municipio"',
         '"CNES_rl_estab_atend_prest_conv"',
-        '"CNES_tb_estado"',
-        '"CNES_tb_servico_especializado"'
+        '"CNES_tb_estado"'
         ]
-
-# Função para mapear esquema PostgreSQL para esquema PySpark
-def get_spark_schema_from_postgres(table_name, jdbc_url, properties):
-    # Definir o mapeamento dos tipos PostgreSQL para tipos PySpark
-    type_mapping = {
-        "integer": IntegerType(),
-        "bigint": LongType(),
-        "smallint": ShortType(),
-        "numeric": DoubleType(),
-        "decimal": DoubleType(),
-        "real": FloatType(),
-        "double precision": DoubleType(),
-        "varchar": StringType(),
-        "char": StringType(),
-        "text": StringType(),
-        "boolean": BooleanType(),
-        "date": DateType(),
-        "timestamp": TimestampType(),
-        "time": StringType(), 
-    }
-    # Carregar o DataFrame do PostgreSQL
-    df = spark.read.jdbc(url=jdbc_url, table=table_name, properties=properties)
-    
-    # Obter o esquema PostgreSQL
-    postgres_schema = df.dtypes 
-    
-    # Converter para esquema PySpark
-    fields = []
-    for col_name, col_type in postgres_schema:
-        spark_type = type_mapping.get(col_type.lower(), StringType())  
-        fields.append(StructField(col_name, spark_type, True))  
-    print(fields)
-    return StructType(fields)
 
 # Configurações de conexão
 jdbc_url, properties = connPsql()
@@ -79,9 +42,4 @@ for table_name in tables:
         .option("driver", "org.postgresql.Driver") \
         .mode("overwrite") \
         .save()
-
- 
-
-
-
 

@@ -1,4 +1,4 @@
-# Enriquecendo a camada Silver com dados de coordenadas geográficas
+# Criando a camada silver
 
 A camada Silver é a etapa em que precisamos filtrar e limpar os dados para garantir uma análise precisa e confiável. Nessa fase, trataremos dados duplicados, inválidos, nulos, entre outros possíveis problemas. Neste caso, optei por utilizar o PySpark para essa tarefa, com o objetivo principal de demonstrar como essa ferramenta funciona em um contexto prático. Sei que os mais experientes podem questionar essa escolha, pois não estamos lidando com milhões de registros, mas acredito que é uma abordagem interessante para explorar o potencial do PySpark em uma base significativa de dados.
 
@@ -6,7 +6,7 @@ Portanto, para o tratamento das tabelas, utilizaremos o PySpark.
 
 Nos dados do CNES, uma das análises que pretendo explorar está relacionada à localização dos estabelecimentos de saúde. Com esses dados, podemos obter insights valiosos sobre a distribuição geográfica desses estabelecimentos. Para isso, precisaremos analisar cuidadosamente as colunas e tabelas que trazem essas informações de localização e ver como estão estruturadas.
 
-# Explorando os dados
+# Enriquecendo a tabela municipios com dados de Latitude e longitude
 
 Explorando os dados que temos na principal tabela de estabelecimentos de saúde, observei que as colunas de latitude e longitude trazem informações muito interessantes, que podem nos ajudar a criar mapas e identificar as principais localizações de alguns estabelecimentos de saúde. No entanto, ao analisar esses dados, identifiquei que cerca de 60 mil linhas não possuem essas informações, o que representa um total de aproximadamente 10% de toda a base.
 
@@ -65,9 +65,9 @@ location = geocode("New York")
 Com o RateLimiter, é possível explorar processamento em batch de geocodificação, garantindo que as requisições respeitem os limites do serviço e evitando bloqueios.
 Em resumo, a Geopy é excelente para enriquecer bases de dados com informações geográficas e para aplicações que precisam de dados de localização em grande escala com uma taxa de requisições controlada.
 
-Para realizar esse enriquecimento utilizei uma dag específica para isso utilizando Python visto que se fossemos utilizar PySpark aqui teriamos que utilizar UDF e para esse caso não seria necessário. O enriquecimento basicamente pega as informações do nome da cidade e do estado e retorna as coordenadas do municipio. Então como temos 5600 cidades nesse caso o processo foi um pouco oneroso, cerca de 2 horas para obter todos os dados. No fim acredito que apenas algumas poucas cidades eu não consegui encontrar as localizações.
+Para realizar esse enriquecimento, utilizei uma DAG específica em Python, pois, se usássemos PySpark, seria necessário aplicar UDFs, o que não seria vantajoso neste caso. O processo de enriquecimento basicamente usa o nome da cidade e o estado para obter as coordenadas do município. Como temos cerca de 5.600 cidades, esse processo foi um pouco demorado, levando cerca de 2 horas para obter todas as informações. No final, acredito que apenas algumas poucas cidades ficaram sem as coordenadas.
 
-A função em python utilizada foi a seguinte:
+A função Python utilizada foi a seguinte:
 
 ```py
 from geopy.geocoders import Nominatim
@@ -160,3 +160,96 @@ Esta função depende das bibliotecas:
 - Geopy para a geocodificação.
 - SQLAlchemy ou outra biblioteca para a inserção do DataFrame no banco de dados com to_sql.
 - Funções auxiliares rodarQuery e inserirDadosDf, que precisam estar definidas para a consulta e a inserção de dados.
+
+## Tratamento e conversão geral de dados utilizando PySpark
+
+Para as próximas tabelas que iremos utilizar nas análises, desenvolvi uma função genérica em PySpark para tratar e inserir esses dados na camada Silver. Nessa etapa, o PySpark avalia o tipo de cada coluna e realiza as conversões necessárias para a inserção correta no banco de dados. As tabelas tratadas aqui servirão como dimensões e filtros para nossas análises.
+
+
+```py
+from pyspark.sql import SparkSession
+from pyspark.sql.types import *
+from conn import *
+
+
+# Inicie a sessão Spark
+spark = SparkSession.builder \
+    .appName("PostgreSQL to Silver Layer") \
+    .config("spark.jars", "/home/jezandre/airflow/postgresql-42.6.0.jar") \
+    .getOrCreate()
+
+
+tables = [
+        '"CNES_tb_estabelecimento"',
+        '"CNES_rl_estab_complementar"',
+        '"CNES_cness_rl_estab_serv_calss"',
+        '"CNES_tb_tipo_unidade"',
+        '"CNES_tb_municipio"',
+        '"CNES_rl_estab_atend_prest_conv"',
+        '"CNES_tb_estado"',
+        '"CNES_tb_servico_especializado"'
+        ]
+
+# Função para mapear esquema PostgreSQL para esquema PySpark
+def get_spark_schema_from_postgres(table_name, jdbc_url, properties):
+    # Definir o mapeamento dos tipos PostgreSQL para tipos PySpark
+    type_mapping = {
+        "integer": IntegerType(),
+        "bigint": LongType(),
+        "smallint": ShortType(),
+        "numeric": DoubleType(),
+        "decimal": DoubleType(),
+        "real": FloatType(),
+        "double precision": DoubleType(),
+        "varchar": StringType(),
+        "char": StringType(),
+        "text": StringType(),
+        "boolean": BooleanType(),
+        "date": DateType(),
+        "timestamp": TimestampType(),
+        "time": StringType(), 
+    }
+    # Carregar o DataFrame do PostgreSQL
+    df = spark.read.jdbc(url=jdbc_url, table=table_name, properties=properties)
+    
+    # Obter o esquema PostgreSQL
+    postgres_schema = df.dtypes 
+    
+    # Converter para esquema PySpark
+    fields = []
+    for col_name, col_type in postgres_schema:
+        spark_type = type_mapping.get(col_type.lower(), StringType())  
+        fields.append(StructField(col_name, spark_type, True))  
+    print(fields)
+    return StructType(fields)
+
+# Configurações de conexão
+jdbc_url, properties = connPsql()
+
+# Definir nome da tabela no PostgreSQL
+for table_name in tables:
+    # Obter o esquema convertido
+    table_bronze = f'BRONZE.{table_name}'
+    spark_schema = get_spark_schema_from_postgres(table_bronze, jdbc_url, properties)
+
+    # Ler dados da camada bronze com o novo esquema
+    df = spark.read.jdbc(url=jdbc_url, table=table_bronze, properties=properties)
+    
+    # Defina o nome da tabela de destino na camada silver
+    table_silver = f'SILVER.{table_name}'
+    
+    # Processar e salvar na camada silver do banco de dados
+    df.write \
+        .format("jdbc") \
+        .option("url", jdbc_url) \
+        .option("dbtable", table_silver) \
+        .option("user", properties["user"]) \
+        .option("password", properties["password"]) \
+        .option("driver", "org.postgresql.Driver") \
+        .mode("overwrite") \
+        .save()
+
+```
+
+A tabela que iremos trabalhar especificamente nesse caso é a `CNES_tb_estabelecimento` nela precisamos tratar o campo de longitude e latitude e outros campos caso seja necessário.
+
