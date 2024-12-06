@@ -48,51 +48,51 @@ dag = DAG(
     )
 
 
-# pegar_url_task = PythonOperator(
-#     task_id = 'pegar_url',
-#     python_callable = testarURL,
-#     provide_context = True,
-#     dag=dag
-# )
+pegar_url_task = PythonOperator(
+    task_id = 'pegar_url',
+    python_callable = testarURL,
+    provide_context = True,
+    dag=dag
+)
 
 
-# baixar_arquivos_task = PythonOperator(
-#     task_id='baixar_arquivos',
-#     python_callable=baixarArquivosCSV,    
-#     provide_context=True,
-#     dag=dag
-# )
+baixar_arquivos_task = PythonOperator(
+    task_id='baixar_arquivos',
+    python_callable=baixarArquivosCSV,    
+    provide_context=True,
+    dag=dag
+)
 
-# renomear_arquivos_task = PythonOperator(
-#     task_id='renomear_arquivos',
-#     python_callable=renomearArquivos,
-#     provide_context=True,
-#     dag=dag
-# )
-
-
-
-# selecionar_arquivos_task = PythonOperator(
-#     task_id='obter_arquivos_csv',
-#     python_callable=selecionarArquivosCSVutilizados,
-#     provide_context=True,
-#     dag=dag,
-# )
+renomear_arquivos_task = PythonOperator(
+    task_id='renomear_arquivos',
+    python_callable=renomearArquivos,
+    provide_context=True,
+    dag=dag
+)
 
 
-# criar_tabelas_task = PythonOperator(
-#     task_id='criar_tabelas_from_csv',
-#     python_callable=criarTabelas,
-#     dag=dag
-# )
+
+selecionar_arquivos_task = PythonOperator(
+    task_id='obter_arquivos_csv',
+    python_callable=selecionarArquivosCSVutilizados,
+    provide_context=True,
+    dag=dag,
+)
 
 
-# inserir_dados_task = PythonOperator(
-#     task_id='inserir_dados',
-#     python_callable=inserirDados,
-#     provide_context=True,
-#     dag=dag
-# )
+criar_tabelas_task = PythonOperator(
+    task_id='criar_tabelas_from_csv',
+    python_callable=criarTabelas,
+    dag=dag
+)
+
+
+inserir_dados_task = PythonOperator(
+    task_id='inserir_dados',
+    python_callable=inserirDados,
+    provide_context=True,
+    dag=dag
+)
 
 add_coordenadas = PythonOperator(
     task_id='adicionar_coordenadas',
@@ -101,7 +101,6 @@ add_coordenadas = PythonOperator(
     dag=dag
 )
 
-# Tarefa para executar um script PySpark
 run_pyspark_job = BashOperator(
     task_id='run_pyspark_job',
     bash_command="""spark-submit --jars /home/jezandre/airflow/postgresql-42.6.0.jar /home/jezandre/airflow/dags/PySpark/main.py""",
@@ -109,6 +108,4 @@ run_pyspark_job = BashOperator(
 )
 
 
-# pegar_url_task >> baixar_arquivos_task >> renomear_arquivos_task >> 
-# selecionar_arquivos_task >> criar_tabelas_task >> inserir_dados_task >> 
-add_coordenadas >> run_pyspark_job
+pegar_url_task >> baixar_arquivos_task >> renomear_arquivos_task >> selecionar_arquivos_task >> criar_tabelas_task >> inserir_dados_task >> add_coordenadas >> run_pyspark_job
